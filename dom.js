@@ -6,9 +6,19 @@ function init() {
         walk();
     });
 
+    element = document.getElementById('advWalkBtn');
+    element.addEventListener('click', function() {
+        advancedWalk(document.body);
+    });
+
     element = document.getElementById('modifyBtn');
     element.addEventListener('click', function () {
         modify();
+    });
+
+    element = document.getElementById('advModifyBtn');
+    element.addEventListener('click', function () {
+        advModify();
     });
 
     element = document.getElementById('addBtn');
@@ -16,9 +26,34 @@ function init() {
         add();
     });
 
+    element = document.getElementById('addElementBtn');
+    element.addEventListener('click', function () {
+        advAdd();
+    });
+
     element = document.getElementById('removeBtn');
     element.addEventListener('click', function () {
         remove();
+    });
+
+    element = document.getElementById('safeRemoveBtn');
+    element.addEventListener('click', function () {
+        safeRemove();
+    });
+
+    element = document.getElementById('deleteBySelectorBtn');
+    element.addEventListener('click', function () {
+        deleteBySelector();
+    });
+
+    element = document.getElementById('basicCloneBtn');
+    element.addEventListener('click', function () {
+        basicClone();
+    });
+
+    element = document.getElementById('advancedCloneBtn');
+    element.addEventListener('click', function () {
+        advancedClone();
     });
 }
 
@@ -46,12 +81,30 @@ function walk() {
 
 }
 
+function advancedWalk(node, indent = "") {
+    const textarea = document.getElementById('nodeInfoTextarea');
+    if (node.nodeType === 1) { // Element node
+      textarea.value += `${indent}${node.nodeName}\n`;
+    }
+  
+    indent += "|   "; // Indent with pipe and three spaces
+    for (let i = 0; i < node.childNodes.length; i++) {
+        advancedWalk(node.childNodes[i], indent);
+    }
+}
+  
+
 function showNode(el) {
     let nodeType = el.nodeType;
     let nodeName = el.nodeName;
     let nodeValue = el.nodeValue;
 
-    alert(`Node type: ${nodeType}\nNode name: ${nodeName}\nNode value: ${nodeValue}`);
+
+    const textarea = document.getElementById('nodeInfoTextarea');
+
+    const text = `Node type: ${nodeType}\nNode name: ${nodeName}\nNode value: ${nodeValue}\n\n`; 
+
+    textarea.value += text;
 }
 
 function modify() {
@@ -75,6 +128,24 @@ function modify() {
     el.dataset.cool = 'true';       // data-cool="true"
     el.dataset.coolFactor = '9000'; //data-cool-factor="9000"
 
+}
+
+function advModify() {
+    // 1. Change the text of the h1
+    const h1 = document.querySelector('h1');
+    if (h1) {
+        h1.textContent = "DOM Manipulation is Fun!";
+
+        // 2. Change the color to a random dark color
+        const colorVarIndex = Math.floor(Math.random() * 6) + 1;
+        h1.style.color = `var(--darkcolor${colorVarIndex})`;
+    }
+
+    // 3. Set the class of the p tag to "shmancy" and toggle the animation class
+    const p = document.querySelector('p');
+    if (p) {
+        p.classList.toggle('shmancy');
+    }
 }
 
 function add() {
@@ -103,8 +174,94 @@ function add() {
     // clearly short hands are pretty easy!
 }
 
+
+function advAdd() {
+    const type = document.getElementById('elementType').value;
+    const content = document.getElementById('content').value || getDefaultAddContent(type);
+    const tagName = document.getElementById('tagName').value || 'div';
+    const output = document.getElementById('advAddOutput');
+    
+    let newNode;
+    const timestamp = new Date().toLocaleString();
+    
+    switch (type) {
+        case 'text':
+            newNode = document.createTextNode(content + ' ' + timestamp);
+            break;
+        case 'comment':
+            newNode = document.createComment(content + ' ' + timestamp);
+            break;
+        case 'element':
+            newNode = document.createElement(tagName);
+            newNode.textContent = content + ' ' + timestamp;
+            break;
+    }
+    
+    output.appendChild(newNode);
+}
+
+function getDefaultAddContent(type) {
+    switch (type) {
+        case 'text':
+            return 'New Text Node';
+        case 'comment':
+            return 'New Comment';
+        case 'element':
+            return 'New Element';
+    }
+}
+
 function remove() {
   document.body.removeChild(document.body.lastChild);
 }
+
+function safeRemove() {
+    // If the last child is the controls section, stop deleting
+    if (document.body.lastChild === document.getElementById('controls')) return;
+
+    // Remove the last child element
+    document.body.removeChild(document.body.lastChild);
+}
+
+function deleteBySelector() {
+    const selector = document.getElementById('selectorInput').value;
+    console.log('Selector:', selector); // Debug the selector
+    const elementsToDelete = document.querySelectorAll(selector);
+    console.log('Elements to Delete:', elementsToDelete); // Debug the found elements
+
+    elementsToDelete.forEach(element => {
+        element.parentNode.removeChild(element);
+    });    
+}
+
+function basicClone() {
+    // Get the paragraph with id "p1"
+    let p1 = document.getElementById('p1');
+
+    // Clone the paragraph
+    let clone = p1.cloneNode(true);
+
+    // You can modify attributes here if needed
+    // For example: clone.id = 'newId';
+
+    // Get the "advAddOutput" element
+    let output = document.getElementById('advAddOutput');
+
+    // Append the cloned paragraph to the "advAddOutput" element
+    output.appendChild(clone);
+}
+
+function advancedClone() {
+    let template = document.getElementById('cardTemplate');
+
+    let clone = template.content.cloneNode(true);
+
+    clone.querySelector('.card-title').textContent = 'New Title';
+    clone.querySelector('.card-text').textContent = 'New text with Random Value: ' + Math.random();
+
+    // Append the cloned content to the output area
+    document.getElementById('advCloneOutput').appendChild(clone);
+}
+
 
 window.addEventListener('DOMContentLoaded', init);

@@ -59,12 +59,50 @@
             75% {background: #ffd97d;}
             100% {background: #ff9b85;}
         }
+
+        .shmancy {
+            font-style: italic;
+            animation: shmancyEffect 1s linear infinite;
+        }
+
+        @keyframes shmancyEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .card {
+            background: var(--card-background);
+            border: var(--card-border);
+            border-radius: var(--card-radius);
+            padding: var(--card-padding);
+            margin: var(--card-margin);
+        }
+
+        .card-title {
+            font-size: 20px;
+        }
+
+        .card-image {
+            width: 10%;
+            margin: var(--card-image-margin);
+        }
+
+        .card-text {
+            font-size: 14px;
+        }
+
+        .card-link {
+            color: #007bff;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
 <!-- start of HTML demo -->
 <h1>Vanilla DOM Manipulation</h1>
 <p id="p1">This is a <em>test</em> of the DOM</p>
+<output id="advAddOutput"></output>
 
 <section id="controls">
 <h2>Demos</h2>
@@ -73,7 +111,10 @@
         <legend>Traversal</legend>
         <label for="walkBtn">Basic Traversal</label>
         <input type="button" id="walkBtn" value="Walk">
-
+        <fieldset id="nodeInfoFieldset">
+            <legend>Node Information</legend>
+            <textarea id="nodeInfoTextarea" rows="10" cols="50"></textarea>
+        </fieldset>
         <!--
             Q1a) Modify the simple walk button example to not use alerts but instead to print out the node information on the page in a <textarea> within this fieldset. Using appropriate spacing or returns, so we can see each step
 
@@ -82,6 +123,8 @@
 
                 Hint: This walk can be done in at least two ways if not more. Doing a brute force traversal may not be the most direct way of doing things.  Looking over more advanced DOM discussions at MDN may reveal other approaches.
         -->
+        <label for="walkBtn">Advanced Traversal</label>
+        <input type="button" id="advWalkBtn" value="Walk">
     </fieldset>
 
     <fieldset>
@@ -95,6 +138,8 @@
             2.  Changes the color of the h1 to a random dark color from one of the 5 CSS variables defined in the style tag above.  You can use the Math.random() function.
             3. Sets the class of the p tag to "shmancy" so that does a new CSS text effect of your own design. You can find something on the internet (please cite the URL of your inspiration) or make up your own.  You can use the classList property as you like, but make sure you toggle the animation class on and off every time you push the button.
         -->
+        <label for="advModifyBtn">Advanced Modification</label>
+        <input type="button" id="advModifyBtn" value="Modify">
     </fieldset>
 
     <fieldset>
@@ -106,6 +151,18 @@
             Q3) Add a select menu that allows you to add a new element to the DOM.  The select menu should have the following options: Text Node, Comment, and Element. When you select one of these options and click the button, the appropriate element should be added to the DOM.  You may want to define an output tag to put the newly created elements in it and style it in a fashion with a border or background color, so you can tell it is new content.  You will need a corresponding text field to define the contents of the text node, comment text, or tag name you want to insert.  By default set the text of any added element to say "New Element" or "New Comment" or "New Text Node" depending on the type of element you are adding but add in the current date and time using a JS Date object.  You can use the toLocaleString() method to get a nicely formatted date and time string.
 
         -->
+
+        <label for="elementType">Choose Element Type:</label>
+        <select id="elementType">
+            <option value="text">Text Node</option>
+            <option value="comment">Comment</option>
+            <option value="element">Element</option>
+        </select>
+        <label for="content">Content:</label>
+        <input type="text" id="content" placeholder="Content (e.g. 'New Element')">
+        <label for="tagName">Tag Name (if Element):</label>
+        <input type="text" id="tagName" placeholder="Tag Name (e.g. 'div')">
+        <input type="button" id="addElementBtn" value="Add Element">
     </fieldset>
 
     <fieldset>
@@ -120,6 +177,16 @@
           Q4b) Delete by selector
             add a text field and a button to the fieldset that allows you to type a CSS selector and then delete all the elements that match that selector.
         -->
+
+        <label for="safeRemoveBtn">Safe Delete</label>
+        <input type="button" id="safeRemoveBtn" value="Remove">
+
+        <fieldset>
+            <label for="selectorInput">Delete by CSS selector:</label>
+            <input type="text" id="selectorInput" placeholder="Enter CSS selector">
+            <input type="button" id="deleteBySelectorBtn" value="Delete by Selector">
+        </fieldset>
+
     </fieldset>
 
     <fieldset>
@@ -130,6 +197,11 @@
           Q5b) Add template at the bottom of the page with some HTML markup representing a "card" that would have and title, image, a short text paragraph and link.  This template should be hidden from view using the <template> tag.  Add a button "Advanced Clone" that clones the template and adds it to the DOM.  Generate some boilerplate text to put in the title and text put add in some random value or number, so you can tell each new card that you are adding.  Find a few images at Unsplash or other sites to use as the card image to make it interesting.  The card design is up to you, and you are more than welcome to get inspiration from online for design.  These cards might be what you could use for a portfolio or gallery of some sort so have fun as if you do this correctly, you can use for your portfolio site eventually.  Make sure you are using semantic HTML and simple CSS to style the cards.  You should use CSS variables.
 
         -->
+        <label for="basicCloneBtn">Basic Clone</label>
+        <input type="button" id="basicCloneBtn" value="Basic Clone">
+
+        <label for="advancedCloneBtn">Advanced Clone</label>
+        <input type="button" id="advancedCloneBtn" value="Advanced Clone">
     </fieldset>
 
 </form>
@@ -139,6 +211,25 @@
 <h2>Look out below these will get deleted if you press the buttons above!</h2>
 <p>I am scared of being deleted!</p>
 <p>Me too. Oh noes, here comes the <code>removeChild()</code> method, it's going to delete us!</p>
+
+<!-- Card Template -->
+<template id="cardTemplate">
+    <section class="card">
+        <h2 class="card-title">Title</h2>
+        <picture>
+            <img 
+                class="card-image"
+                src="images/random_pic.jpg" 
+                alt="Random Image"/>
+        </picture>
+        <p class="card-text">This is some boilerplate text for the card. Random Value:</p>
+        <a class="card-link" href="#">Link to somewhere</a>
+    </section>
+</template>
+
+<!-- Output Area -->
+<output id="advCloneOutput"></output>
+
 
 <!-- put all your new code in this dom.js file -->
 <script src="dom.js"></script>
